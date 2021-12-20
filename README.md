@@ -1,7 +1,7 @@
 ---
 home: true
 heroText: 史迪仔瓜的博客
-# heroImage: /hero.png
+bgImage: '/bg.jpg'
 tagline: stay hungry stay foolish.
 # heroImage: /hero.png
 # heroImageStyle: {
@@ -13,7 +13,7 @@ tagline: stay hungry stay foolish.
 #   borderRadius: '1rem',
 # }
 bgImageStyle: {
-  height: '450px'
+  height: '550px'
 }
 isShowTitleInHome: false
 actionText: Guide
