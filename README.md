@@ -1,7 +1,8 @@
 ---
 home: true
-heroText: vuepress-theme-reco
-tagline: A simple and beautiful vuepress blog theme.
+heroText: 史迪仔瓜的博客
+# heroImage: /hero.png
+tagline: stay hungry stay foolish.
 # heroImage: /hero.png
 # heroImageStyle: {
 #   maxWidth: '600px',
