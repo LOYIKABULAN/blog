@@ -1,7 +1,7 @@
 ---
 home: true
 heroText: 史迪仔瓜的博客
-bgImage: '/bg.jpg'
+bgImage: '/bg.webp'
 tagline: stay hungry stay foolish.
 # heroImage: /hero.png
 # heroImageStyle: {
