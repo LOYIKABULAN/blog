@@ -12,7 +12,7 @@ first page in category1
 <template>
   <div id="app">
     <div class="show">
-      <video id="video" style="width: 50%; height: auto" loop="true"></video>
+      <video id="video" style="width: 50%; height: auto" loop="true"  preload="none" webkit-playsinline="" playsinline="true" controls></video>
       <video id="video2" style="width: 50%; height: auto"></video>
       <canvas id="canvas"></canvas>
     </div>
@@ -143,6 +143,7 @@ export default {
             // 旧的浏览器可能没有srcObject
             if ("srcObject" in video) {
               video.srcObject = stream;
+              video.play();
               document
                 .getElementById("snap")
                 .addEventListener("click", function () {
@@ -154,6 +155,7 @@ export default {
             } else {
               // 防止在新的浏览器里使用它，应为它已经不再支持了
               video.src = window.URL.createObjectURL(stream);
+              video.play();
               document
                 .getElementById("snap")
                 .addEventListener("click", function () {
@@ -165,6 +167,7 @@ export default {
             }
             video.onloadedmetadata = function (e) {
               video.play();
+              
             };
           })
           .catch(function (err) {
