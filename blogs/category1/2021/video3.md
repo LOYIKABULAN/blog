@@ -12,7 +12,7 @@ first page in category1
 <template>
   <div id="app">
     <div class="show">
-      <video id="video" style="width: 50%; height: auto"></video>
+      <video id="video" style="width: 50%; height: auto" loop="true"></video>
       <video id="video2" style="width: 50%; height: auto"></video>
       <canvas id="canvas"></canvas>
     </div>
