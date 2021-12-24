@@ -31,7 +31,16 @@ export default {
   name: "App",
   components: {},
   mounted() {
-    console.log("hello");
+     const script= document.createElement('script');
+     script.type = 'text/javascript';
+     script.src = `https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js`;
+     document.body.appendChild(script);
+ 
+     setTimeout(()=> {
+				let vConsole = new VConsole();
+			}, 1000);
+    
+    console.log('测试');
 
     var video = document.getElementById("video");
     var video2 = document.getElementById("video2");
