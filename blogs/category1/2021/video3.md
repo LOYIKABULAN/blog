@@ -6,13 +6,12 @@ tags:
 categories:
   - category1
 ---
-
 first page in category1
-
+   https://www.jianshu.com/p/979d9ee3f75b
 <template>
   <div id="app">
     <div class="show">
-      <video id="video" style="width: 50%; height: auto" loop="true"  preload="none" webkit-playsinline="" playsinline="true" controls></video>
+      <video id="video" style="width: 50%; height: auto" loop="true"  preload="none" webkit-playsinline="" playsinline="true" ></video>
       <video id="video2" style="width: 50%; height: auto"></video>
       <canvas id="canvas"></canvas>
     </div>
