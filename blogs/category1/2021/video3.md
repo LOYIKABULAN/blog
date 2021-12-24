@@ -1,5 +1,5 @@
 ---
-title: 调用摄像头旧版
+title: 调用摄像头我的兼容
 date: 2021-12-23
 tags:
   - js
@@ -48,8 +48,8 @@ export default {
       // var URL = window.URL || window.webkitURL; // 获取到window.URL对象
 
       // 想要获取一个最接近 1280x720 的相机分辨率
-      
-        navigator.getUserMedia(
+        if(navigator.getUserMedia){
+          navigator.getUserMedia(
           {
             video: true,
           },
@@ -101,6 +101,68 @@ export default {
             console.log(error.name || error);
           }
         );
+        }else{
+         if (navigator.mediaDevices === undefined) {
+          navigator.mediaDevices = {};
+        }
+        // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+        // 因为这样可能会覆盖已有的属性。这里我们只会在没有getUserMedia属性的时候添加它。
+        if (navigator.mediaDevices.getUserMedia === undefined) {
+          navigator.mediaDevices.getUserMedia = function (constraints) {
+            // 首先，如果有getUserMedia的话，就获得它
+            var getUserMedia =
+              navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+            // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+            if (!getUserMedia) {
+              return Promise.reject(
+                new Error("getUserMedia is not implemented in this browser")
+              );
+            }
+
+            // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+            return new Promise(function (resolve, reject) {
+              getUserMedia.call(navigator, constraints, resolve, reject);
+            });
+          };
+        }
+
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: true })
+          .then(function (stream) {
+            var video = document.querySelector("video");
+            // 旧的浏览器可能没有srcObject
+            if ("srcObject" in video) {
+              video.srcObject = stream;
+              document
+                .getElementById("snap")
+                .addEventListener("click", function () {
+                  ctx.drawImage(video, 0, 0, width, height);
+                  var url = canvas.toDataURL("image/png");
+                  document.getElementById("download").href = url;
+                  document.getElementById("download").download = url;
+                });
+            } else {
+              // 防止在新的浏览器里使用它，应为它已经不再支持了
+              video.src = window.URL.createObjectURL(stream);
+              document
+                .getElementById("snap")
+                .addEventListener("click", function () {
+                  ctx.drawImage(video, 0, 0, width, height);
+                  var url = canvas.toDataURL("image/png");
+                  document.getElementById("download").href = url;
+                  document.getElementById("download").download = url;
+                });
+            }
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+          })
+          .catch(function (err) {
+            console.log(err.name + ": " + err.message);
+          });
+        }
+        
       
     }
 
