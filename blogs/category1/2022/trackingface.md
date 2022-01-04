@@ -10,7 +10,7 @@ categories:
 <template>
   <div id="app">
     <div class="show">
-      <video id="video" style="width: 50vw; height: 50vw"></video>
+      <video id="video" style="width: 50%; height: auto" loop="true"  preload="none" webkit-playsinline="" playsinline="true" ></video>
       <video id="video2" style="width: 50%; height: auto"></video>
       <canvas id="canvas"></canvas>
     </div>
@@ -31,7 +31,16 @@ export default {
   name: "App",
   components: {},
   mounted() {
-    console.log("hello");
+     const script= document.createElement('script');
+     script.type = 'text/javascript';
+     script.src = `https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js`;
+     document.body.appendChild(script);
+ 
+     setTimeout(()=> {
+				let vConsole = new VConsole();
+			}, 1000);
+    
+    console.log('测试');
 
     var video = document.getElementById("video");
     var video2 = document.getElementById("video2");
@@ -48,62 +57,8 @@ export default {
       // var URL = window.URL || window.webkitURL; // 获取到window.URL对象
 
       // 想要获取一个最接近 1280x720 的相机分辨率
-      if (navigator.mediaDevices) {
-        console.log("navigator.mediaDevices", navigator.mediaDevices);
-        var constraints = { audio: true, video: { width: 1280, height: 720 } };
-        navigator.mediaDevices
-          .getUserMedia(constraints)
-          .then(function (stream) {
-            var video = document.querySelector("video");
-            video.srcObject = stream;
-            document
-              .getElementById("snap")
-              .addEventListener("click", function () {
-                ctx.drawImage(video, 0, 0, width, height);
-                var url = canvas.toDataURL("image/png");
-                document.getElementById("download").href = url;
-                document.getElementById("download").download = url;
-              });
-            var mediaRecorder = new MediaRecorder(stream);
-
-            record.onclick = function () {
-              mediaRecorder.start();
-              console.log(mediaRecorder.state);
-              console.log("recorder started");
-              record.style.background = "red";
-              record.style.color = "black";
-            };
-            stop.onclick = function () {
-              mediaRecorder.stop();
-              console.log(mediaRecorder.state);
-              console.log("recorder stopped");
-              record.style.background = "";
-              record.style.color = "";
-            };
-            mediaRecorder.onstop = function (e) {
-              console.log("data available after MediaRecorder.stop() called.");
-
-              video2.controls = true;
-              var blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
-              chunks = [];
-              var audioURL = window.URL.createObjectURL(blob);
-              video2.src = audioURL;
-              video2.play();
-              console.log("recorder stopped", audioURL);
-            };
-            mediaRecorder.ondataavailable = function (e) {
-              console.log("ondataavailable", e);
-              chunks.push(e.data);
-            };
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-          })
-          .catch(function (err) {
-            console.log(err.name + ": " + err.message);
-          }); // 总是在最后检查错误
-      } else {
-        navigator.getUserMedia(
+        if(navigator.getUserMedia){
+          navigator.getUserMedia(
           {
             video: true,
           },
@@ -155,12 +110,78 @@ export default {
             console.log(error.name || error);
           }
         );
-      }
+        }else{
+         if (navigator.mediaDevices === undefined) {
+          navigator.mediaDevices = {};
+        }
+        // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+        // 因为这样可能会覆盖已有的属性。这里我们只会在没有getUserMedia属性的时候添加它。
+        if (navigator.mediaDevices.getUserMedia === undefined) {
+          navigator.mediaDevices.getUserMedia = function (constraints) {
+            // 首先，如果有getUserMedia的话，就获得它
+            var getUserMedia =
+              navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+            // 一些浏览器根本没实现它 - 那么就返回一个error到promise的reject来保持一个统一的接口
+            if (!getUserMedia) {
+              return Promise.reject(
+                new Error("getUserMedia is not implemented in this browser")
+              );
+            }
+
+            // 否则，为老的navigator.getUserMedia方法包裹一个Promise
+            return new Promise(function (resolve, reject) {
+              getUserMedia.call(navigator, constraints, resolve, reject);
+            });
+          };
+        }
+
+        navigator.mediaDevices
+          .getUserMedia({ audio: true, video: true })
+          .then(function (stream) {
+            var video = document.querySelector("video");
+            // 旧的浏览器可能没有srcObject
+            if ("srcObject" in video) {
+              video.srcObject = stream;
+              video.play();
+              document
+                .getElementById("snap")
+                .addEventListener("click", function () {
+                  ctx.drawImage(video, 0, 0, width, height);
+                  var url = canvas.toDataURL("image/png");
+                  document.getElementById("download").href = url;
+                  document.getElementById("download").download = url;
+                });
+            } else {
+              // 防止在新的浏览器里使用它，应为它已经不再支持了
+              video.src = window.URL.createObjectURL(stream);
+              video.play();
+              document
+                .getElementById("snap")
+                .addEventListener("click", function () {
+                  ctx.drawImage(video, 0, 0, width, height);
+                  var url = canvas.toDataURL("image/png");
+                  document.getElementById("download").href = url;
+                  document.getElementById("download").download = url;
+                });
+            }
+            video.onloadedmetadata = function (e) {
+              video.play();
+              
+            };
+          })
+          .catch(function (err) {
+            console.log(err.name + ": " + err.message);
+          });
+        }
+        
+      
     }
 
-    document.getElementById("live").addEventListener("click", function () {
-    liveVideo();
-    });
+    // document.getElementById("live").addEventListener("click", function () {
+      liveVideo();
+    // });
+
     let tracker = new window.tracking.ObjectTracker("face");
     tracker.setInitialScale(4);
     tracker.setStepSize(2);
