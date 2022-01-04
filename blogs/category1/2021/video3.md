@@ -26,6 +26,8 @@ first page in category1
 </template>
 
 <script>
+import tracking from "../../../.vuepress/public/facejs/tracking";
+import "../../../.vuepress/public/facejs/face";
 export default {
   name: "App",
   components: {},
@@ -179,6 +181,25 @@ export default {
 
     document.getElementById("live").addEventListener("click", function () {
       liveVideo();
+    });
+
+    let tracker = new window.tracking.ObjectTracker("face");
+    tracker.setInitialScale(4);
+    tracker.setStepSize(2);
+    tracker.setEdgesDensity(0.1);
+    window.tracking.track("#video", tracker);
+
+    tracker.on("track", function (event) {
+      if (event.data.length !== 0) {
+        console.log(event);
+        let h =event.data[0].height
+        let w =event.data[0].width
+        let x =event.data[0].x
+        let y =event.data[0].y
+        console.log(
+            'h,w,x,y',h,w,x,y
+        )
+      }
     });
   },
 };
