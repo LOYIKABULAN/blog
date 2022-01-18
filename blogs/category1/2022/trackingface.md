@@ -25,13 +25,16 @@ categories:
 </template>
 
 <script>
-import tracking from "../../../.vuepress/public/facejs/tracking";
-import "../../../.vuepress/public/facejs/face";
+// import "../../../.vuepress/public/facejs/face";
 export default {
   name: "App",
   components: {},
   mounted() {
-     const script= document.createElement('script');
+// import tracking from "../../../.vuepress/public/facejs/tracking";
+    import("../../../.vuepress/public/facejs/face")
+    import("../../../.vuepress/public/facejs/tracking").then((tracking) =>{
+      console.log(tracking)
+      const script= document.createElement('script');
      script.type = 'text/javascript';
      script.src = `https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js`;
      document.body.appendChild(script);
@@ -199,6 +202,8 @@ export default {
             'h,w,x,y',h,w,x,y
         )
       }
+    })
+     
     });
   },
 };

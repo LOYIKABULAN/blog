@@ -1,13 +1,12 @@
 ---
-title: 调用摄像头我的兼容
-date: 2021-12-23
+title: 调用摄像头添加人脸追踪
+date: 2022-01-04
 tags:
   - js
 categories:
   - category1
 ---
-first page in category1
-   https://www.jianshu.com/p/979d9ee3f75b
+
 <template>
   <div id="app">
     <div class="show">
@@ -26,13 +25,16 @@ first page in category1
 </template>
 
 <script>
-import tracking from "../../../.vuepress/public/facejs/tracking";
-import "../../../.vuepress/public/facejs/face";
+// import "../../../.vuepress/public/facejs/face";
 export default {
   name: "App",
   components: {},
   mounted() {
-     const script= document.createElement('script');
+// import tracking from "../../../.vuepress/public/facejs/tracking";
+    import("../../../.vuepress/public/facejs/face")
+    import("../../../.vuepress/public/facejs/tracking").then((tracking) =>{
+      console.log(tracking)
+      const script= document.createElement('script');
      script.type = 'text/javascript';
      script.src = `https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js`;
      document.body.appendChild(script);
@@ -179,9 +181,9 @@ export default {
       
     }
 
-    document.getElementById("live").addEventListener("click", function () {
+    // document.getElementById("live").addEventListener("click", function () {
       liveVideo();
-    });
+    // });
 
     let tracker = new window.tracking.ObjectTracker("face");
     tracker.setInitialScale(4);
@@ -200,6 +202,8 @@ export default {
             'h,w,x,y',h,w,x,y
         )
       }
+    })
+     
     });
   },
 };
